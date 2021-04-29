@@ -145,7 +145,7 @@ public class PageViewBuilder<A, B extends Searchable> {
     }
 
     public PageView<B> done() {
-        Stream<B> stream = list.stream().map(mapper);
+        Stream<B> stream = list.parallelStream().map(mapper);
 
         if (filter != null) {
             stream = stream.filter(filter);
