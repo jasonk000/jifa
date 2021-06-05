@@ -38,7 +38,7 @@ dependencies {
             "${prefix}org.eclipse.osgi.jar",
             "${prefix}org.eclipse.equinox.registry.jar",
             "${prefix}org.apache.felix.scr.jar",
-            "${prefix}org.eclipse.equinox.ds.jar",
+            "${prefix}org.eclipse.equinox.event.jar",
             "${prefix}org.eclipse.mat.report.jar",
             "${prefix}org.eclipse.mat.api.jar",
             "${prefix}org.eclipse.mat.parser.jar",

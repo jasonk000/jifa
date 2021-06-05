@@ -26,7 +26,7 @@ p2AsMaven {
         iu 'org.eclipse.core.runtime'
         iu 'org.eclipse.equinox.app'
         iu 'org.eclipse.equinox.common'
-        iu 'org.eclipse.equinox.ds'
+        iu 'org.eclipse.equinox.event'
         iu 'org.eclipse.equinox.preferences'
         iu 'org.eclipse.equinox.registry'
         iu 'org.eclipse.osgi'
