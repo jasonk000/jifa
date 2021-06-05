@@ -17,14 +17,16 @@ plugins {
 
 p2AsMaven {
     group 'eclipse-deps', {
-        repoEclipse '4.8'
+        repoEclipse '4.18'
         iu 'com.ibm.icu'
+        iu 'org.apache.felix.scr'
         iu 'org.eclipse.core.commands'
         iu 'org.eclipse.core.contenttype'
         iu 'org.eclipse.core.jobs'
         iu 'org.eclipse.core.runtime'
         iu 'org.eclipse.equinox.app'
         iu 'org.eclipse.equinox.common'
+        iu 'org.eclipse.equinox.ds'
         iu 'org.eclipse.equinox.preferences'
         iu 'org.eclipse.equinox.registry'
         iu 'org.eclipse.osgi'
