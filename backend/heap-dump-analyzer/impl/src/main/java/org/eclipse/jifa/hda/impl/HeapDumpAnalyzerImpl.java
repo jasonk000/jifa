@@ -598,15 +598,15 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
                 for (int i = 0; i < data.resultContext.getRowCount(); i++) {
                     Object row = data.resultContext.getRow(i);
 
-                    // TODO reading the cleaner() field is expensive; tbh I'm not sure why we exclude them
-
+                    // TODO also not sure why this filter was applied in the original product
                     // if (data.isValid(row)) {
                     //     continue;
                     // }
 
-                    summary.position += data.position(row);
-                    summary.limit += data.limit(row);
-                    summary.capacity += data.capacity(row);
+                    // TODO reading these values is expensive; tbh I'm not sure why we exclude them
+                    // summary.position += data.position(row);
+                    // summary.limit += data.limit(row);
+                    // summary.capacity += data.capacity(row);
                     summary.totalSize++;
                 }
                 data.summary = summary;

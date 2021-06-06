@@ -87,8 +87,8 @@
         axios.get(heapDumpService(this.file, 'directByteBuffer/summary')).then(resp => {
           this.totalSize = resp.data.totalSize
           this.position = "-"
-          this.limit = resp.data.limit
-          this.capacity = resp.data.capacity
+          this.limit = "-"
+          this.capacity = "-"
           if (this.totalSize > 0) {
             this.fetchRecords()
           } else {
