@@ -591,10 +591,7 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
             if (result instanceof IResultTable) {
                 table = (IResultTable) result;
 
-                RefinedResultBuilder builder =
-                    new RefinedResultBuilder(new SnapshotQueryContext(context.snapshot), table);
-                builder.setSortOrder(3, Column.SortDirection.DESC);
-                data.resultContext = (RefinedTable) builder.build();
+                data.resultContext = table;
                 DirectByteBuffer.Summary summary = new DirectByteBuffer.Summary();
                 summary.totalSize = 0;
 
@@ -626,12 +623,14 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
         PagingRequest pagingRequest = new PagingRequest(page, pageSize);
         return $(() -> {
             DirectByteBufferData data = queryDirectByteBufferData(context);
-            RefinedTable resultContext = data.resultContext;
+            IResultTable resultContext = data.resultContext;
 
             final AtomicInteger afterFilterCount = new AtomicInteger(0);
-            List<DirectByteBuffer.Item> items = data.resultContext.getRows().stream()
+            List<DirectByteBuffer.Item> items = IntStream.range(0, resultContext.getRowCount() - 1)
+                .mapToObj(resultContext::getRow)
                 .filter(data::isValid)
                 .peek(filtered -> afterFilterCount.incrementAndGet())
+                .sorted(Comparator.comparingLong(data::capacity).reversed())
                 .skip(pagingRequest.from())
                 .limit(pagingRequest.getPageSize())
                 .map(row -> {
@@ -644,7 +643,6 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
                     return item;
                 })
                 .collect(Collectors.toList());
-
             return new PageView(pagingRequest, afterFilterCount.get(), items);
         });
     }

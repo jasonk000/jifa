@@ -17,7 +17,7 @@ import org.eclipse.jifa.hda.api.AnalysisContext;
 import org.eclipse.jifa.hda.api.Model;
 import org.eclipse.mat.query.IResult;
 import org.eclipse.mat.query.IResultTree;
-import org.eclipse.mat.query.refined.RefinedTable;
+import org.eclipse.mat.query.IResultTable;
 import org.eclipse.mat.snapshot.ISnapshot;
 
 import java.lang.ref.SoftReference;
@@ -63,7 +63,7 @@ public class AnalysisContextImpl implements AnalysisContext {
             ARGS.put("queryString", OQL);
         }
 
-        RefinedTable resultContext;
+        IResultTable resultContext;
 
         Model.DirectByteBuffer.Summary summary;
 
