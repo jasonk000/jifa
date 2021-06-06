@@ -595,18 +595,18 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
                 DirectByteBuffer.Summary summary = new DirectByteBuffer.Summary();
                 summary.totalSize = 0;
 
-                for (int i = 0; i < data.resultContext.getRowCount(); i++) {
-                    Object row = data.resultContext.getRow(i);
-
+                List<Object> rows = IntStream.range(0, data.resultContext.getRowCount() - 1)
+                    .mapToObj(data.resultContext::getRow)
+                    .parallel()
                     // TODO also not sure why this filter was applied in the original product
-                    // if (data.isValid(row)) {
-                    //     continue;
-                    // }
+                    // anyway, it is  useful to force the loading of data
+                    .filter(data::isValid)
+                    .collect(Collectors.toList());
 
-                    // TODO reading these values is expensive; tbh I'm not sure why we exclude them
-                    // summary.position += data.position(row);
-                    // summary.limit += data.limit(row);
-                    // summary.capacity += data.capacity(row);
+                for (Object row : rows) {
+                    summary.position += data.position(row);
+                    summary.limit += data.limit(row);
+                    summary.capacity += data.capacity(row);
                     summary.totalSize++;
                 }
                 data.summary = summary;
@@ -633,9 +633,9 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
             final AtomicInteger afterFilterCount = new AtomicInteger(0);
             List<DirectByteBuffer.Item> items = IntStream.range(0, resultContext.getRowCount() - 1)
                 .mapToObj(resultContext::getRow)
-                .sorted(Comparator.comparingLong(data::capacity).reversed())
                 .filter(data::isValid)
                 .peek(filtered -> afterFilterCount.incrementAndGet())
+                .sorted(Comparator.comparingLong(data::capacity).reversed())
                 .skip(pagingRequest.from())
                 .limit(pagingRequest.getPageSize())
                 .map(row -> {
