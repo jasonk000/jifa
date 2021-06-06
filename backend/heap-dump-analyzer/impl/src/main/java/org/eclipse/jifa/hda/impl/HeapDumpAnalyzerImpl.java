@@ -87,6 +87,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.eclipse.jifa.common.util.ReflectionUtil.getFieldValueOrNull;
 import static org.eclipse.jifa.common.vo.support.SearchPredicate.createPredicate;
@@ -595,13 +596,16 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
                 builder.setSortOrder(3, Column.SortDirection.DESC);
                 data.resultContext = (RefinedTable) builder.build();
                 DirectByteBuffer.Summary summary = new DirectByteBuffer.Summary();
-                summary.totalSize = data.resultContext.getRowCount();
+                summary.totalSize = 0;
 
-                for (int i = 0; i < summary.totalSize; i++) {
+                for (int i = 0; i < data.resultContext.getRowCount(); i++) {
                     Object row = data.resultContext.getRow(i);
-                    summary.position += data.position(row);
-                    summary.limit += data.limit(row);
-                    summary.capacity += data.capacity(row);
+                    if (data.isValid(row)) {
+                        summary.position += data.position(row);
+                        summary.limit += data.limit(row);
+                        summary.capacity += data.capacity(row);
+                        summary.totalSize++;
+                    }
                 }
                 data.summary = summary;
             } else {
@@ -619,28 +623,29 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
 
     @Override
     public PageView<DirectByteBuffer.Item> getDirectByteBuffers(AnalysisContextImpl context, int page, int pageSize) {
+        PagingRequest pagingRequest = new PagingRequest(page, pageSize);
         return $(() -> {
             DirectByteBufferData data = queryDirectByteBufferData(context);
             RefinedTable resultContext = data.resultContext;
-            return PageViewBuilder.build(new PageViewBuilder.Callback<Object>() {
-                @Override
-                public int totalSize() {
-                    return data.summary.totalSize;
-                }
 
-                @Override
-                public Object get(int index) {
-                    return resultContext.getRow(index);
-                }
-            }, new PagingRequest(page, pageSize), row -> {
-                DirectByteBuffer.Item item = new DirectByteBuffer.Item();
-                item.objectId = resultContext.getContext(row).getObjectId();
-                item.label = data.label(row);
-                item.position = data.position(row);
-                item.limit = data.limit(row);
-                item.capacity = data.capacity(row);
-                return item;
-            });
+            final AtomicInteger afterFilterCount = new AtomicInteger(0);
+            List<DirectByteBuffer.Item> items = data.resultContext.getRows().stream()
+                .filter(data::isValid)
+                .peek(filtered -> afterFilterCount.incrementAndGet())
+                .skip(pagingRequest.from())
+                .limit(pagingRequest.getPageSize())
+                .map(row -> {
+                    DirectByteBuffer.Item item = new DirectByteBuffer.Item();
+                    item.objectId = resultContext.getContext(row).getObjectId();
+                    item.label = data.label(row);
+                    item.position = data.position(row);
+                    item.limit = data.limit(row);
+                    item.capacity = data.capacity(row);
+                    return item;
+                })
+                .collect(Collectors.toList());
+
+            return new PageView(pagingRequest, afterFilterCount.get(), items);
         });
     }
 

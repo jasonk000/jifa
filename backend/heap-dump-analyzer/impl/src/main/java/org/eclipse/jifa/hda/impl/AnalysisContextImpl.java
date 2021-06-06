@@ -56,7 +56,7 @@ public class AnalysisContextImpl implements AnalysisContext {
     static class DirectByteBufferData {
         static final String OQL =
             "SELECT s.@displayName as label, s.position as position, s.limit as limit, s.capacity as " +
-            "capacity FROM java.nio.DirectByteBuffer s where s.cleaner != null";
+            "capacity, s.cleaner as cleaner FROM java.nio.DirectByteBuffer s";
 
         static final Map<String, Object> ARGS = new HashMap<>(1);
         static {
@@ -83,6 +83,9 @@ public class AnalysisContextImpl implements AnalysisContext {
             return (Integer) resultContext.getColumnValue(row, 3);
         }
 
+        public boolean isValid(Object row) {
+            return resultContext.getColumnValue(row, 4) != null;
+        }
     }
 
     static class LeakReportData {
