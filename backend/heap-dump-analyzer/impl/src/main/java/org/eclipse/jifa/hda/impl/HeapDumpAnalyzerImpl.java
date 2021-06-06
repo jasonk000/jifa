@@ -597,12 +597,17 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
 
                 for (int i = 0; i < data.resultContext.getRowCount(); i++) {
                     Object row = data.resultContext.getRow(i);
-                    if (data.isValid(row)) {
-                        summary.position += data.position(row);
-                        summary.limit += data.limit(row);
-                        summary.capacity += data.capacity(row);
-                        summary.totalSize++;
-                    }
+
+                    // TODO reading the cleaner() field is expensive; tbh I'm not sure why we exclude them
+
+                    // if (data.isValid(row)) {
+                    //     continue;
+                    // }
+
+                    summary.position += data.position(row);
+                    summary.limit += data.limit(row);
+                    summary.capacity += data.capacity(row);
+                    summary.totalSize++;
                 }
                 data.summary = summary;
             } else {
@@ -628,9 +633,9 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
             final AtomicInteger afterFilterCount = new AtomicInteger(0);
             List<DirectByteBuffer.Item> items = IntStream.range(0, resultContext.getRowCount() - 1)
                 .mapToObj(resultContext::getRow)
+                .sorted(Comparator.comparingLong(data::capacity).reversed())
                 .filter(data::isValid)
                 .peek(filtered -> afterFilterCount.incrementAndGet())
-                .sorted(Comparator.comparingLong(data::capacity).reversed())
                 .skip(pagingRequest.from())
                 .limit(pagingRequest.getPageSize())
                 .map(row -> {
