@@ -21,6 +21,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
+import org.osgi.framework.wiring.BundleRevision;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -77,7 +78,9 @@ public class MATProvider implements HeapDumpAnalyzer.Provider {
             }
 
             for (Bundle bundle : bundles) {
-                bundle.start();
+                if (canBeStarted(bundle)) {
+                    bundle.start();
+                }
             }
 
             analyzer =
@@ -87,5 +90,12 @@ public class MATProvider implements HeapDumpAnalyzer.Provider {
         } catch (BundleException be) {
             throw new JifaException(be);
         }
+    }
+
+    boolean canBeStarted(Bundle bundle) {
+        // https://stackoverflow.com/questions/11655295/using-the-osgi-api-how-do-i-find-out-if-a-given-bundle-is-a-fragment
+        // https://stackoverflow.com/users/448551/bj-hargrave
+        boolean isFragment = (bundle.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) != 0;
+        return !isFragment;
     }
 }
