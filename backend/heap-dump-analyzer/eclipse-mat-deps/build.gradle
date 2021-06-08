@@ -29,7 +29,11 @@ p2AsMaven {
         iu 'org.eclipse.equinox.event'
         iu 'org.eclipse.equinox.preferences'
         iu 'org.eclipse.equinox.registry'
+        iu 'org.eclipse.help'
+        iu 'org.eclipse.jface'
         iu 'org.eclipse.osgi'
+        iu 'org.eclipse.swt'
+        iu 'org.eclipse.swt.gtk.linux.x86_64'
         append true
         slicingOption 'includeFeatures', 'false'
         slicingOption 'includeNonGreedy', 'false'
@@ -42,6 +46,16 @@ p2AsMaven {
         iu 'org.eclipse.mat.hprof'
         iu 'org.eclipse.mat.parser'
         iu 'org.eclipse.mat.report'
+        iu 'org.eclipse.mat.ui'
+        append true
+        slicingOption 'includeFeatures', 'false'
+        slicingOption 'includeNonGreedy', 'false'
+        slicingOption 'includeOptional', 'false'
+    }
+
+    group 'mat-calcite-plugin', {
+        repo 'jar:https://github.com/vlsi/mat-calcite-plugin/releases/download/v1.5.0/MatCalciteRepository-1.5.0.zip!/'
+        iu 'MatCalcitePlugin'
         append true
         slicingOption 'includeFeatures', 'false'
         slicingOption 'includeNonGreedy', 'false'
@@ -52,8 +66,9 @@ p2AsMaven {
 afterEvaluate {
     copy {
         from files(
-                "${buildDir}/p2asmaven/p2/eclipse-deps/plugins",
-                "${buildDir}/p2asmaven/p2/eclipse-mat/plugins")
+                "${buildDir}/p2asmaven/p2/mat-calcite-plugin/plugins",
+                "${buildDir}/p2asmaven/p2/eclipse-mat/plugins",
+                "${buildDir}/p2asmaven/p2/eclipse-deps/plugins")
         into "${mat_deps_dir_path}"
         include '*.jar'
         rename '(.+)_(.+)', '$1.jar'
@@ -65,4 +80,3 @@ task clean {
         delete files("${mat_deps_dir_path}", "${projectDir}/workspace")
     }
 }
-

@@ -39,10 +39,17 @@ dependencies {
             "${prefix}org.eclipse.equinox.registry.jar",
             "${prefix}org.apache.felix.scr.jar",
             "${prefix}org.eclipse.equinox.event.jar",
+            "${prefix}org.eclipse.help.jar",
+            "${prefix}org.eclipse.jface.jar",
             "${prefix}org.eclipse.mat.report.jar",
             "${prefix}org.eclipse.mat.api.jar",
             "${prefix}org.eclipse.mat.parser.jar",
-            "${prefix}org.eclipse.mat.hprof.jar")
+            "${prefix}org.eclipse.mat.hprof.jar",
+            "${prefix}org.eclipse.mat.ui.jar",
+            "${prefix}org.eclipse.swt.jar",
+            "${prefix}org.eclipse.swt.gtk.linux.x86_64_*.jar",
+            "${prefix}MatCalcitePlugin.jar",
+            )
 }
 
 task installJar(type: Copy, dependsOn: jar) {
