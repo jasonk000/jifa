@@ -24,20 +24,12 @@ p2AsMaven {
         iu 'org.eclipse.core.contenttype'
         iu 'org.eclipse.core.jobs'
         iu 'org.eclipse.core.runtime'
-        // iu 'org.eclipse.e4.emf.xpath'
-        // iu 'org.eclipse.e4.ui.model.workbench'
         iu 'org.eclipse.equinox.app'
         iu 'org.eclipse.equinox.common'
         iu 'org.eclipse.equinox.event'
         iu 'org.eclipse.equinox.preferences'
         iu 'org.eclipse.equinox.registry'
-        // iu 'org.eclipse.help'
-        // iu 'org.eclipse.jface'
-        // iu 'org.eclipse.jface.text'
         iu 'org.eclipse.osgi'
-        // iu 'org.eclipse.swt'
-        // iu 'org.eclipse.swt.gtk.linux.x86_64'
-        // iu 'org.eclipse.ui'
         append true
         slicingOption 'includeFeatures', 'false'
         slicingOption 'includeNonGreedy', 'false'
@@ -50,6 +42,29 @@ p2AsMaven {
         iu 'org.eclipse.mat.hprof'
         iu 'org.eclipse.mat.parser'
         iu 'org.eclipse.mat.report'
+        append true
+        slicingOption 'includeFeatures', 'false'
+        slicingOption 'includeNonGreedy', 'false'
+        slicingOption 'includeOptional', 'false'
+    }
+
+    group 'calcite-eclipse-deps', {
+        repoEclipse '4.18'
+        iu 'org.eclipse.help'
+        iu 'org.eclipse.jface'
+        iu 'org.eclipse.jface.text'
+        iu 'org.eclipse.swt'
+        iu 'org.eclipse.ui'
+        feature 'org.eclipse.platform'
+        append true
+        slicingOption 'includeFeatures', 'false'
+        slicingOption 'includeNonGreedy', 'false'
+        slicingOption 'includeOptional', 'false'
+        slicingOption 'platformFilter', 'linux,gtk,x86_64'
+    }
+
+    group 'calcite-mat-deps', {
+        repo 'https://archive.eclipse.org/mat/photon/M7/update-site/'
         iu 'org.eclipse.mat.ui'
         append true
         slicingOption 'includeFeatures', 'false'
@@ -71,11 +86,14 @@ afterEvaluate {
     copy {
         from files(
                 "${buildDir}/p2asmaven/p2/mat-calcite-plugin/plugins",
+                "${buildDir}/p2asmaven/p2/calcite-eclipse-deps/plugins",
+                "${buildDir}/p2asmaven/p2/calcite-mat-deps/plugins",
+                "${buildDir}/p2asmaven/p2/eclipse-deps/plugins",
                 "${buildDir}/p2asmaven/p2/eclipse-mat/plugins",
-                "${buildDir}/p2asmaven/p2/eclipse-deps/plugins")
+                )
         into "${mat_deps_dir_path}"
         include '*.jar'
-        rename '(.+)_(.+)', '$1.jar'
+        rename '(.+)', '$1'
     }
 }
 

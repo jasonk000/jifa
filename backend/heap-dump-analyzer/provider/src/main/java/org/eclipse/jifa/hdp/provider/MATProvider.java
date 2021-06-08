@@ -71,14 +71,20 @@ public class MATProvider implements HeapDumpAnalyzer.Provider {
             for (File file : files) {
                 String name = file.getName();
                 // org.eclipse.osgi is the system bundle
-                if (name.endsWith(".jar") && !name.equals("org.eclipse.osgi.jar")) {
+                if (name.endsWith(".jar") && !name.startsWith("org.eclipse.osgi_")) {
                     Bundle b = framework.getBundleContext().installBundle(file.toURI().toString());
                     bundles.add(b);
                 }
             }
 
+            ArrayList validNames = new ArrayList();
+            validNames.add("org.apache.felix.scr");
+            validNames.add("org.eclipse.equinox.event");
+            validNames.add("org.eclipse.jifa.hda.implementation");
+
             for (Bundle bundle : bundles) {
-                if (canBeStarted(bundle)) {
+                if (validNames.contains(bundle.getSymbolicName())) {
+                    System.out.println("starting bundle:   " + bundle);
                     bundle.start();
                 }
             }
@@ -90,12 +96,5 @@ public class MATProvider implements HeapDumpAnalyzer.Provider {
         } catch (BundleException be) {
             throw new JifaException(be);
         }
-    }
-
-    boolean canBeStarted(Bundle bundle) {
-        // https://stackoverflow.com/questions/11655295/using-the-osgi-api-how-do-i-find-out-if-a-given-bundle-is-a-fragment
-        // https://stackoverflow.com/users/448551/bj-hargrave
-        boolean isFragment = (bundle.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) != 0;
-        return !isFragment;
     }
 }
