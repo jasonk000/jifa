@@ -1626,8 +1626,6 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
             .sorted(DominatorTree.DefaultItem.sortBy(sortBy, ascendingOrder))
             .skip(pagingRequest.from())
             .limit(pagingRequest.getPageSize())
-            .collect(Collectors.toList()) // intermediate to split sequential / parallel
-            .stream()
             .parallel()
             .map(VirtualDefaultItem::realize)
             .collect(Collectors.toList());
@@ -1647,8 +1645,6 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
             .sorted(DominatorTree.ClassItem.sortBy(sortBy, ascendingOrder))
             .skip(pagingRequest.from())
             .limit(pagingRequest.getPageSize())
-            .collect(Collectors.toList()) // intermediate to split sequential / parallel
-            .stream()
             .parallel()
             .map(VirtualClassItem::realize)
             .collect(Collectors.toList());
@@ -1668,8 +1664,6 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
             .sorted(DominatorTree.ClassLoaderItem.sortBy(sortBy, ascendingOrder))
             .skip(pagingRequest.from())
             .limit(pagingRequest.getPageSize())
-            .collect(Collectors.toList()) // intermediate to split sequential / parallel
-            .stream()
             .parallel()
             .map(VirtualClassLoaderItem::realize)
             .collect(Collectors.toList());
@@ -1689,8 +1683,6 @@ public class HeapDumpAnalyzerImpl implements HeapDumpAnalyzer<AnalysisContextImp
             .sorted(DominatorTree.PackageItem.sortBy(sortBy, ascendingOrder))
             .skip(pagingRequest.from())
             .limit(pagingRequest.getPageSize())
-            .collect(Collectors.toList()) // intermediate to split sequential / parallel
-            .stream()
             .parallel()
             .map(VirtualPackageItem::realize)
             .collect(Collectors.toList());
