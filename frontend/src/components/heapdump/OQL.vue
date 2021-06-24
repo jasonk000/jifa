@@ -44,6 +44,7 @@
       <el-autocomplete
               v-model="query"
               :fetch-suggestions="queryHistory"
+              :disabled="disabledInput"
               placeholder="Query ..."
               :trigger-on-focus="false"
               prefix-icon="el-icon-edit"
@@ -174,7 +175,7 @@
   const TEXT = 3
 
   export default {
-    props: ['file', 'queryType'],
+    props: ['file', 'queryType', 'preparedQuery'],
     data() {
       return {
         ICONS,
@@ -207,6 +208,8 @@
         historyQueries: [],
         treeSortBy:'retainedHeap',
         treeAscendingOrder:true,
+
+        disabledInput: false,
       }
     },
     methods: {
@@ -397,6 +400,15 @@
           return (history.value.toLowerCase().indexOf(queryString.toLowerCase().trim()) === 0);
         };
       },
+    },
+    created() {
+      if (this.preparedQuery) {
+        this.query = this.preparedQuery
+        this.disabledInput = true
+        this.search()
+      } else {
+        this.disabledInput = false
+      }
     }
   }
 </script>
